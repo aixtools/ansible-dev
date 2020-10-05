@@ -3,7 +3,8 @@
 
   tasks:
   - name: Reinstall node using NIMCLIENT
-    command:
-      "nimclient -o bos_inst -a source=mksysb -a spot=710404 -a lpp_source=710404_lpp -a mksysb=7104_04_gold \
-        -a bosinst_data=720bid_ow -a resolv_conf=resolv_osu -a fb_script=fb_ojdk \
-        -a installp_bundle=ojdk_bnd -a installp_flags=-acNgX -a accept_licenses=yes"
+    command: >
+      nimclient -o bos_inst
+        -a source=mksysb -a spot=710404 -a lpp_source=710404_lpp -a mksysb=7104_04_gold
+        -a bosinst_data=720bid_ow -a resolv_conf=resolv_osu -a fb_script=fb_ojdk
+        -a installp_bundle=ojdk_bnd -a installp_flags=-acNgX -a accept_licenses=yes

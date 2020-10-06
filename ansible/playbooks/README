@@ -1,0 +1,2 @@
+The directory name AIX is chosen as that is the key: value
+"ansible_os_family": "AIX"

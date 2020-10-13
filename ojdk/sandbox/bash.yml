@@ -1,0 +1,36 @@
+
+#
+#     [Oct 13 2020, 18:33:19]
+#
+# /usr/lpp/bos.sysmgt/nim/methods/c_sm_nim cust  -l 'aixtools' -o 'aixtools.gnu.bash' -f '' -f '' -f 'Y' -f 'c' -f 'N' -f 'g' -f 'X' -f '' -f ''
+
+---
+- hosts: wip
+  gather_facts: no
+
+  tasks:
+  - name: Showres example -- not really needed here!
+    command: >
+      nimclient -o showres
+        -a sm_inst_flags="installp_cmd -f aixtools.gnu.bash -L -l"
+        -a resource=aixtools
+    register: showres
+
+  # Maybe not the best way - yet. Looks clumsy
+  - name: Display results
+    debug:
+      msg: "{{ showres.stdout.split(\"\n\") }}"
+
+
+  # INST_LIST="-f${TMP_LIST}"
+  - name: Install the software.
+    command: >
+      /usr/sbin/nimclient -o cust -a lpp_source=aixtools
+            -a filesets="aixtools.gnu.bash"
+            -a installp_flags="-agX"
+    register: cust
+
+  # Maybe not the best way - yet. Looks clumsy
+  - name: Display (preview) results
+    debug:
+      msg: "{{ cust.stdout.split(\"\n\") }}"

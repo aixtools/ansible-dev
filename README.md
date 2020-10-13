@@ -3,10 +3,10 @@
   directories:
 
     - name: ./ojdk
-      # Seperate repository for work on AIX playbook for https://github.com/AdoptOpenJDK/openjdk-infrastructure
+      # Work on AIX playbook for https://github.com/AdoptOpenJDK/openjdk-infrastructure
 
     - name: ./nodejs
-      # work on AIX playbook for nodejs
+      # Work on AIX playbook for nodejs: https://github.com/nodejs/build
 
     - name: ./local
-      # scratch directory for generic development using my own POWER system with IVM rather than HMC
+      # Scratch directory for generic development using my own POWER system with IVM rather than HMC

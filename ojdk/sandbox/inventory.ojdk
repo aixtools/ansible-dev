@@ -1,0 +1,40 @@
+# Hosts used for OJDK development
+
+# Work in Progress
+[wip]
+ojdk06.bak
+
+# Test
+[test]
+ojdk06.bak
+
+# AIX OS 7.1 TL4
+[aix_7104]
+ojdk06.bak
+
+# AIX OS 7.1 TL5
+# Note: ojdk05 is not a nimclient - so nim related operations
+# won't work atm. This is to prevent accidents
+# Hence, included here as a host group example
+[aix_7105]
+ojdk05.bak
+
+# AIX OS 7.2 TL2
+# Likewise - long running systems not configured as nimclients
+[aix_7202]
+ojdk01.bak
+ojdk02.bak
+
+
+# All OJDK at OSU
+[ojdk_osu:children]
+aix_7104
+aix_7105
+aix_7202
+
+# Variables for all hosts
+# Use 'root' user with authentification provided by a 'local' key
+# You may need to edit the kayname used, e.g., ~/.ssh/ed_ecdsa
+[ojdk_osu:vars]
+ansible_ssh_user=root
+ansible_ssh_private_key=~/.ssh/id_rsa

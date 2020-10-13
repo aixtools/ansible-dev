@@ -1,0 +1,22 @@
+---
+- hosts: wip
+  gather_facts: no
+
+  tasks:
+  - name: Configure IP, netmask and set en1 up.
+    community.general.aix_devices:
+      device: en1
+      attributes:
+        netaddr: 140.211.9.100
+        netmask: 255.255.255.0
+        state: up
+      state: available
+
+  - name: Change hostname
+    command:
+      chdev -l inet0 -a hostname="p9-aix1-ojdk06.osuosl.org"
+
+  - name: Add default route
+    command:
+      # AIX 7.1
+      chdev -l inet0 -a route=net,-hopcount,0,,,,,,,default,140.211.9.1

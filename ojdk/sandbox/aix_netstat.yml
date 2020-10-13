@@ -1,0 +1,23 @@
+---
+- hosts: wip
+  gather_facts: no
+
+  tasks:
+  - name: Get netstat interfaces
+    command:
+      /usr/bin/netstat -ni
+    register: netstat_ni
+   
+  - name: Get netstat routes
+    command:
+      /usr/bin/netstat -nr
+    register: netstat_nr
+   
+  # Maybe not the best way - yet. Looks clumsy
+  - name: Display interfaces
+    debug:
+      msg: "{{ netstat_ni.stdout.split(\"\n\") }}"
+   
+  - name: Display routes
+    debug:
+      msg: "{{ netstat_nr.stdout.split(\"\n\") }}"

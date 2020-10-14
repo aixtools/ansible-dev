@@ -1,0 +1,18 @@
+---
+# Example to get PID and use it in the playbook.
+- hosts: wip
+  gather_facts: no
+
+  tasks:
+    - name: GET ps output
+      command: ps -f
+      register: ansible_ps
+    - name: GET the pid
+      command: 'echo $PPID'
+      register: ansible_pid
+    - name: Display ps
+      debug:
+        msg: "{{ ansible_ps.stdout.split(\"\n\") }}"
+    - name: Display PID
+      debug:
+        var: ansible_pid.stdout

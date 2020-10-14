@@ -2,8 +2,12 @@
 # And then use the new/renewed keys to set an IP address on en1
 # Gather_facts is no: not relevant at this stage (of development)
 ---
+# Use variables as 1st step to generic playbook
 - hosts: localhost
   gather_facts: no
+  
+  vars:
+    labels: { osutest, osu-test.bak }
 
   tasks:
   - name: Remove ssh key for OSUtest
@@ -23,22 +27,32 @@
 - hosts: osutest
   gather_facts: no
 
+  vars:
+    netaddr: 140.211.9.80
+    netmask: 255.255.255.0
+    device: en1
+    hostname: p8-aix2-osutest
+    rtype: net
+    rdest: default
+    rgateway: 140.211.9.1
+    route: "{{ rtype }},-hopcount,0,,,,,,,{{ rdest }},{{ rgateway }}"
+
   tasks:
   - name: Configure IP, netmask and set en1 up.
     community.general.aix_devices:
-      device: en1
+      device: "{{ device }}"
       attributes:
-        netaddr: 140.211.9.80
-        netmask: 255.255.255.0
+        netaddr: "{{ netaddr }}"
+        netmask: "{{ netmask }}"
         state: up
       state: available
 
   - name: Change hostname
     command:
-      chdev -l inet0 -a hostname="p8-aix2-osutest"
+      chdev -l inet0 -a hostname="{{ hostname }}"
 
   - name: Add default route
     command:
       # AIX 7.1 and later has many more "," in the route attribute
       # Using this on AIX 6.1 or AIX 5.3 will require a 'shorter' argument
-      chdev -l inet0 -a route=net,-hopcount,0,,,,,,,default,140.211.9.1
+      chdev -l inet0 -a route="{{ route }}"

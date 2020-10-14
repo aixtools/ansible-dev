@@ -1,0 +1,20 @@
+# Playbook to clear and renew ssh-keys in knownhosts locally
+# And then use the new/renewed keys to set an IP address on en1
+# Gather_facts is no: not relevant at this stage (of development)
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: Remove ssh key for OSUtest
+    command:
+       ssh-keygen -R "{{ item.label }}"
+    with_items:
+      - label: osutest
+      - label: osu-test.bak
+  - name: add new keys for OSUtest
+    command:
+       ssh -o StrictHostKeyChecking=accept-new root@"{{ item.label }}" date
+    with_items:
+      - label: osutest
+      - label: osu-test.bak

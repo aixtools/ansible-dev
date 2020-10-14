@@ -10,3 +10,10 @@
   # Doing this so that anyone working on this repository can have their personal keys
   # but use an 'alias' so that the inventory files can be part of the repository
   # rather than ignored files.
+
+- to get rid of the message:
+"/opt/lib/python3.6/site-packages/cryptography/hazmat/bindings/openssl/binding.py:177: CryptographyDeprecationWarning: OpenSSL version 1.0.2 is no longer supported by the OpenSSL project, please upgrade. The next version of cryptography will drop support for it.
+  utils.CryptographyDeprecationWarning,"
+
+add to ~/.profile:
+export PYTHONWARNINGS=ignore # optional

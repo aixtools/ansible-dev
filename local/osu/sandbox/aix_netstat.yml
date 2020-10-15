@@ -15,13 +15,9 @@
     register: netstat_nr
     changed_when: false
    
-  # Maybe not the best way - yet. Looks clumsy
-  - name: Display interfaces
+  - name: Display results
     debug:
-      # msg: "{{ netstat_ni.stdout.split(\"\n\") }}"
-      var: netstat_ni.stdout_lines
-   
-  - name: Display routes
-    debug:
-      # msg: "{{ netstat_nr.stdout.split(\"\n\") }}"
-      var: netstat_nr.stdout_lines
+      var: "{{ item }}.stdout_lines"
+    with_items:
+      - netstat_ni
+      - netstat_nr

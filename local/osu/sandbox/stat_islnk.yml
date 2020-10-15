@@ -1,0 +1,25 @@
+### Learn the stat: builtin
+- hosts: wip
+  gather_facts: no
+
+  tasks:
+    - name: Get stats of the FS object
+      stat:
+        path: /usr/bin/bash
+      register: sym
+
+    - debug:
+        msg: "islnk isn't defined (path doesn't exist)"
+      when: sym.stat.islnk is not defined
+
+    - debug:
+        msg: "islnk is defined (path must exist)"
+      when: sym.stat.islnk is defined
+
+    - debug:
+        msg: "Path exists and is a symlink"
+      when: sym.stat.islnk is defined and sym.stat.islnk
+
+    - debug:
+        msg: "Path exists and isn't a symlink"
+      when: sym.stat.islnk is defined and sym.stat.islnk == False

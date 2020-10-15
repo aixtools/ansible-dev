@@ -1,0 +1,18 @@
+# A playbook that uses standard Ansible modules to download a file
+## maybe even have md5 checksum check!
+---
+- hosts: wip
+  gather_facts: no
+
+  vars:
+    tools:  "http://download.aixtools.net/tools/gnu/"
+    lpp:    "aixtools.gnu.bash"
+    vrmf:   "5.0.18.0"
+    bashmd5: "md5:E6106A3CF9A82B4E8785003F587ECA13"
+
+  tasks:
+    - name: Download Bash
+      get_url:
+        url: "{{ tools }}{{ lpp }}.{{ vrmf }}.I"
+        dest: "/tmp"
+        checksum: "{{ bashmd5 }}"

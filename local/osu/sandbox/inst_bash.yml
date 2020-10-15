@@ -1,0 +1,48 @@
+# Install bash when /usr/bin/bash does not exist
+# Or it is a symbolic link pointing at nothing
+- hosts: wip
+  gather_facts: no
+
+  vars:
+    tools:  "http://download.aixtools.net/tools/gnu/"
+    lpp:    "aixtools.gnu.bash"
+    vrmf:   "5.0.18.0"
+    bashmd5: "md5:E6106A3CF9A82B4E8785003F587ECA13"
+
+  tasks:
+    - name: Check for existing Bash
+      stat:
+        path: /usr/bin/bash
+      register: sym
+    - name: Check Target
+      stat:
+        path: "{{ sym.stat.lnk_target }}"
+      register: tgt
+      when: >
+        sym.stat.islnk is defined and
+        sym.stat.lnk_target is defined and
+        sym.stat.lnk_target
+
+    # Download and Install Bash
+    - name: Download and Install Bash
+      block:
+        - get_url:
+            url: "{{ tools }}{{ lpp }}.{{ vrmf }}.I"
+            dest: "/tmp"
+            checksum: "{{ bashmd5 }}"
+        - command: "/usr/sbin/installp -d /tmp/{{ lpp }}.{{ vrmf }}.I -aYX all"
+          register: installp
+        - file: "path=/tmp/{{ lpp }}.{{ vrmf }}.I state=absent"
+        - file: "path=/tmp/.toc state=absent"
+        - file:
+            src: /opt/bin/bash
+            dest: /usr/bin/bash
+            state: link
+        - debug:
+            var: "{{ item }}.stdout_lines"
+          with_items:
+            - installp
+      when: >
+        sym.stat.exists == false or
+        ( sym.stat.islnk is defined and sym.stat.islnk and
+        tgt.stat.exists is defined and tgt.stat.exists == false )

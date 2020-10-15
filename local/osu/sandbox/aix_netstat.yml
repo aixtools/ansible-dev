@@ -7,17 +7,21 @@
     command:
       /usr/bin/netstat -ni
     register: netstat_ni
+    changed_when: false
    
   - name: Get netstat routes
     command:
       /usr/bin/netstat -nr
     register: netstat_nr
+    changed_when: false
    
   # Maybe not the best way - yet. Looks clumsy
   - name: Display interfaces
     debug:
-      msg: "{{ netstat_ni.stdout.split(\"\n\") }}"
+      # msg: "{{ netstat_ni.stdout.split(\"\n\") }}"
+      var: netstat_ni.stdout_lines
    
   - name: Display routes
     debug:
-      msg: "{{ netstat_nr.stdout.split(\"\n\") }}"
+      # msg: "{{ netstat_nr.stdout.split(\"\n\") }}"
+      var: netstat_nr.stdout_lines

@@ -1,6 +1,6 @@
 # ansible-dev
-# Sandbox for Ansible development and learning - outside of specific projects
-# Using sub-directories to manage, inparticular - the targets aka inventory
+## Sandbox for Ansible development and learning - outside of specific projects
+## Use sub-directories to manage the inventory as well as objectives
   directories:
 
     # Scratch directory for generic development

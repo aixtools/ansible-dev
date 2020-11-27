@@ -1,0 +1,31 @@
+##############################################################
+# AdoptOpenJDK - Playbook to configure AIX Filesystems
+##############################################################
+vars:
+  - DF=/usr/bin/df"
+
+##############################
+# Collect System Information #
+##############################
+#
+    "ansible_facts": {
+        "ansible_vgs": {
+            "rootvg": [
+                {
+                    "free_pps": "323",
+                    "pp_size": "128 megabyte(s)",
+                    "pv_name": "hdisk0",
+                    "pv_state": "active",
+                    "total_pps": "511"
+                }
+            ]
+        },
+    }
+
+vars:
+  vg_info   = ansible_facts[ansible_vgs]
+  total_pps = vg_info[rootvg][total_pps]
+  pp_size   = vg_info[rootvg][pp_size].split(' ')[0]
+  hd_size   = "multiplication {{ total_pps * pp_size }}"
+
+tasks:

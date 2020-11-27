@@ -1,0 +1,9 @@
+---
+# This Playbook verifies and deploys the requirements for AdoptOpenJDK on AIX
+
+- hosts: all
+  roles:
+    - verify
+    - users
+    - fs
+    - oss

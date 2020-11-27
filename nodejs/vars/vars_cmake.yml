@@ -1,0 +1,7 @@
+# Vars for AIXTOOLS bash
+---
+tools:  "http://download.aixtools.net/tools/"
+lpp:    "aixtools.cmake"
+vrmf:   "3.18.4.0"
+chksum: "md5:1FA18ABFC0DBE20D59AFB223409343A0"
+idem:   "/opt/bin/cmake"

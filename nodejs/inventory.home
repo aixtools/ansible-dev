@@ -1,0 +1,22 @@
+# Group examples - including nested groups
+# even though the groups may be identical!
+# Work in Progress
+
+[wip]
+x076
+
+# Test
+[test]
+x075
+x076
+x077
+
+# All OJDK at OSU
+[home:children]
+wip
+test
+
+# Variables for all OSU hosts
+[home:vars]
+ansible_ssh_user=root
+ansible_ssh_private_key=~/.ssh/id_ansible

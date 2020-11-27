@@ -1,0 +1,31 @@
+# Install AIXTOOLS package
+# expected to provide definition of target host using --extra-vars
+---
+- hosts: "{{ tgt_host | default('nohostname') }}"
+  gather_facts: no
+
+  vars_files:
+    - ./vars/vars_bash.yml
+
+  tasks:
+    - name: "Check for existing {{ lpp }}"
+      stat:
+        path: "{{ idem }}"
+      register: tgt
+
+    - name: "Download and Install {{ lpp }}"
+      block:
+        - get_url:
+            url: "{{ tools }}{{ lpp }}.{{ vrmf }}.I"
+            dest: "/tmp"
+            checksum: "{{ chksum }}"
+        - command: "/usr/sbin/installp -d /tmp/{{ lpp }}.{{ vrmf }}.I -aYX all"
+          register: installp
+          ignore_errors: yes
+        - file: "path=/tmp/{{ lpp }}.{{ vrmf }}.I state=absent"
+        - file: "path=/tmp/.toc state=absent"
+        - debug:
+            var: "{{ item }}.stdout_lines"
+          with_items:
+            - installp
+      when: tgt.stat.exists == false

@@ -1,0 +1,45 @@
+# Install AIXTOOLS Package
+# expected to provide definition of target host using --extra-vars
+---
+- hosts: "{{ tgt_host | default('nohostname') }}"
+  gather_facts: no
+
+  vars_files:
+    - vars/vars_cmake.yml
+
+  tasks:
+    - name: "Check for existing {{ lpp }}"
+      stat:
+        path: "{{ idem }}"
+      register: tgt
+
+    - name: "Download and Install {{ lpp }}"
+      block:
+        - name: "Download {{ lpp }}.{{ vrmf }}.I"
+          get_url:
+            url: "{{ tools }}{{ lpp }}.{{ vrmf }}.I"
+            dest: "/tmp"
+            checksum: "{{ chksum }}"
+        - command: "/usr/sbin/installp -d /tmp/{{ lpp }}.{{ vrmf }}.I -aYXp all"
+          register: preview
+          ignore_errors: yes
+          changed_when: false
+        - debug:
+            msg: "{{ len(preview.stdout.split('\n')) }}"
+          when: preview.rc == 0
+        - debug:
+            var: preview.stderr_lines
+          when: preview.rc != 0
+        - command: "/usr/sbin/installp -d /tmp/{{ lpp }}.{{ vrmf }}.I -aYX all"
+          register: installp
+          ignore_errors: yes
+          when: preview.rc == 0
+        - file: "path=/tmp/{{ lpp }}.{{ vrmf }}.I state=absent"
+        - file: "path=/tmp/.toc state=absent"
+        - debug:
+            var: installp.stdout_lines
+          when: installp.rc == 0
+        - debug:
+            var: installp.stderr_lines
+          when: installp.rc != 0
+      when: tgt.stat.exists == false

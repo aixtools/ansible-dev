@@ -1,0 +1,85 @@
+#################################
+# Configure AIX system settings #
+#################################
+---
+- name: Ensure /etc/syslog.conf entries are present
+  blockinfile:
+    backup: yes
+    dest: /etc/syslog.conf
+    block: |
+      *.debug;*.emerg;*.alert;*.crit;*.warning /var/log/messages rotate size 1000k files 4
+      syslog.debug /var/log/syslog rotate size 1000k files 4
+      *.err;kern.debug;daemon.notice;mail.crit /var/adm/messages rotate size 1000k files 4
+  tags: syslog
+
+- name: Ensure log files exist
+  file:
+    path: "{{ item }}"
+    state: touch
+    mode: 0644
+  with_items:
+    - /var/log/syslog
+    - /var/adm/messages
+    - /var/log/messages
+  changed_when: False
+  tags: syslog
+
+- name: Reload syslogd
+  service: name=syslogd state=reloaded
+  changed_when: False
+  tags: syslog
+
+- name: Set fullcore and maxuproc
+  command: chdev -l sys0 -a fullcore=true -a maxuproc=512
+  changed_when: False
+  tags: chdev
+
+- name: Examine login.cfg for bash
+  slurp:
+    src: /etc/security/login.cfg
+  register: logincfg
+- name: examine shells setting
+  set_fact:
+    shells: "{{ logincfg['content'] | b64decode | regex_search('shells = (.*)') }}"
+- set_fact:
+    bash_in_shells: "{{ shells.find('bash') }}"
+- debug:
+    var: bash_in_shells
+- debug:
+      msg: "Need to add bash to shells"
+  when: bash_in_shells == "-1"
+- block:
+  - name: "Add bash to user shells"
+    replace:
+      path: /etc/security/login.cfg
+      regexp: 'shells = '
+      replace: 'shells = /bin/bash,'
+    tags: login_shell
+  - blockinfile:
+      dest: /etc/shells
+      block: |
+        /bin/bash
+    tags: login_shell
+  when: bash_in_shells == "-1"
+
+- name: Set variables for global environment
+  blockinfile:
+    dest: /etc/environment
+    block: |
+      "# Variables for AdoptOpenJDK"
+      AIXTHREAD_HRT=true
+      PKG_CONFIG_PATH=/opt/freeware/lib64/pkgconfig:/opt/freeware/lib/pkgconfig
+      PERL5LIB=/opt/freemarker/lib/perl5
+  tags: etc_environ
+
+# Move this task to user profiles
+# and/or include environment: statements for specific playbooks
+# that need freeware tools
+# as two xlc compilers are used - PATH should be set per job,
+# not globally
+# - name: Add freeware and xlc to PATH for global environment
+#   replace:
+#     path: /etc/environment
+#     regexp: 'PATH=/usr/bin'
+#     replace: 'PATH=/opt/freeware/bin:/opt/IBM/xlC/13.1.3/bin:/usr/bin'
+#   tags: etc_environ

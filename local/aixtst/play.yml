@@ -1,0 +1,57 @@
+# Playbook to show working with variables - especially dictionaries
+---
+- hosts: localhost
+  gather_facts: no
+
+  vars_files:
+    - vars/test.yml
+
+  vars:
+    - myfacts: "{{ ansible_facts }}"
+    - v1a: "{{ var1a }}"
+    - v1b: "{{ var1b }}"
+    - v2: "{{ var2[-2:] }}"
+    - v3: "{{ var3 }}"
+    - v4: "{{ var4 }}"
+
+  tasks:
+    - name: "Show my local vars above using debug: var:"
+      debug:
+        var: var1a
+    - debug:
+        var: var1a[2:]
+    - debug:
+        var: var1a[2:9]
+    - debug:
+        msg: "{{ var1b }}"
+    - debug:
+        var: var1b[-3:-1]
+    - name: "Just show v2 - that is defined using Jinja2 syntax"
+      debug:
+        var: v2
+    - name: "Display var2 in full"
+      debug:
+        var: var2
+    - name: "Display var2 item by item using with_item:"
+      debug:
+        var: item
+      with_items:
+        "{{ var2 }}"
+    - name: "Use Jinja on v2 to show with_item: item.a2"
+      debug:
+        var: item.a2
+      with_items:
+        "{{ v2 }}"
+    - debug:
+        var: var3
+    - debug:
+        var: var4
+
+    - name: "Show ansible_facts value"
+      debug:
+        var: myfacts
+...
+## YAML should be terminated
+#    - name: "Show vars for further debugging"
+#      debug:
+#        var: vars

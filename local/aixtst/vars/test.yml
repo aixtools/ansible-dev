@@ -1,0 +1,84 @@
+# Different variable types - what do they look like
+# and how to read them in playbook using jinja2
+---
+# This creates a string with spaces between the values put here
+var1a:
+  0ab
+  4EF 8hi
+  BCD
+
+# This creates an array - each element is addressed via [N], or also [:-1], [1:3]
+# [:-1] -> all but last
+# [-1:] - the last ??
+var1b:
+  - a1
+  - b1
+  - c1
+  - d1
+  - e1
+  - f1
+
+# This creates an array - each element is addressed via [N], or also [:-1], [1:3]
+# However - within an array - a keyed value can be returned
+# using 'with_item: "{{ var_name }}" , i.e., Jinja2 brackets are ALWAYS needed
+var2:
+  - a2: A2.1
+    b1: one
+  - a2: A2.2
+    b2: two
+  - a2: A2.3
+    b3: three
+
+# This is varable, one item, with two named strings, and a list
+# TASK [debug] ***************************************************************
+# ok: [localhost] => {
+#     "var3": {
+#        "v3a": "v1234 v789a vcdef",
+#        "v3b": "x1234 x789a xcdef"
+#        "v3c": [
+#            "y1234",
+#            "y789a",
+#            "ycdef"
+#        ]
+#     }
+# }
+
+var3:
+  v3a:
+    v1234
+    v789a
+    vcdef
+  v3b:
+    x1234
+    x789a
+    xcdef
+  v3c:
+    - y1234
+    - y789a
+    - ycdef
+
+# This variable has three elements of different sizes
+# ok: [localhost] => {
+#   "var4": [
+#       {
+#           "v3.1": "var41",
+#           "v3.2": "var42",
+#           "v4": "first"
+#       },
+#       {
+#           "v4": "second"
+#       },
+#       {
+#           "v3.3": "var43",
+#           "v4": "third"
+#       }
+#   ]
+#}
+
+var4:
+  - v4: first
+    v3.1: var41
+    v3.2: var42
+  - v4: second
+  - v4: third
+    v3.3: var43

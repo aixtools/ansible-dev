@@ -1,0 +1,12 @@
+---
+- hosts: wip
+  gather_facts: no
+
+  tasks:
+  - name: run date
+    command: date
+    register: date
+
+  - name: show date
+    debug:
+      var: date.stdout

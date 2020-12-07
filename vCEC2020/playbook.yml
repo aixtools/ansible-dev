@@ -1,0 +1,9 @@
+# A sample playbook for vCEC2020 education
+---
+- hosts: x076
+
+  tasks:
+  - name: Start service xntpd, if not started
+    service:
+      name: xntpd
+      state: started

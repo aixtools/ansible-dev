@@ -7,12 +7,18 @@
     - name: GET ps output
       command: ps -f
       register: ansible_ps
-    - name: GET the pid
+    - name: COMMAND the pid
       command: 'echo $PPID'
-      register: ansible_pid
+      register: ansible_pid_c
+    - name: SHELL the pid
+      shell: 'echo $PPID'
+      register: ansible_pid_s
     - name: Display ps
       debug:
         msg: "{{ ansible_ps.stdout.split(\"\n\") }}"
-    - name: Display PID
+    - name: Display PID command
       debug:
-        var: ansible_pid.stdout
+        var: ansible_pid_c
+    - name: Display PID shell
+      debug:
+        var: ansible_pid_s

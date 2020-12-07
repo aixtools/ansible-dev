@@ -1,0 +1,44 @@
+# Playbook to clear and renew ssh-keys in knownhosts locally
+# And then use the new/renewed keys to set an IP address on en1
+# Gather_facts is no: not relevant at this stage (of development)
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: Remove ssh key for OSUtest
+    command:
+       ssh-keygen -R "{{ item.label }}"
+    with_items:
+      - label: osutest
+      - label: osu-test.bak
+  - name: add new keys for OSUtest
+    command:
+       ssh -o StrictHostKeyChecking=accept-new root@"{{ item.label }}" date
+    with_items:
+      - label: osutest
+      - label: osu-test.bak
+
+
+- hosts: osutest
+  gather_facts: no
+
+  tasks:
+  - name: Configure IP, netmask and set en1 up.
+    community.general.aix_devices:
+      device: en1
+      attributes:
+        netaddr: 140.211.9.80
+        netmask: 255.255.255.0
+        state: up
+      state: available
+
+  - name: Change hostname
+    command:
+      chdev -l inet0 -a hostname="p8-aix2-osutest"
+
+  - name: Add default route
+    command:
+      # AIX 7.1 and later has many more "," in the route attribute
+      # Using this on AIX 6.1 or AIX 5.3 will require a 'shorter' argument
+      chdev -l inet0 -a route=net,-hopcount,0,,,,,,,default,140.211.9.1

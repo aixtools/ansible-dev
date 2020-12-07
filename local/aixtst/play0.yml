@@ -1,0 +1,40 @@
+# Playbook to show working with variables - especially dictionaries
+---
+- hosts: localhost
+  gather_facts: yes
+
+  vars_files:
+    - defaults/main.yml
+
+  vars:
+    - rootvg: "{{ ansible_facts.vgs.rootvg }}"
+    - pkg: "{{ package }}"
+
+  tasks:
+    # working bits
+    - name: "Show facts value"
+      debug:
+        var: ansible_facts.vgs
+    - name: "Show localized facts value"
+      debug:
+        var: rootvg
+    - name: "Show if defaults/main.yml value"
+      debug:
+        var: package
+    - name: "Show localized playbook var value"
+      debug:
+        var: pkg
+
+    # not working as expected
+    - name: "Show facts value rootvg.free_pps"
+      debug:
+        var: rootvg.free_pps
+      ignore_errors: yes
+    - name: "Show facts value using jinja2 rootvg.free_pps"
+      debug:
+        var: "{{ rootvg.free_pps }}"
+      ignore_errors: yes
+    - name: "Show facts message rootvg.free_pps"
+      debug:
+        msg: "{{ rootvg.free_pps }}"
+      ignore_errors: yes

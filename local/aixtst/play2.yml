@@ -1,0 +1,39 @@
+# Playbook to show working with variables - especially dictionaries
+---
+- hosts: localhost
+  gather_facts: yes
+
+  vars_files:
+    - vars/bash.yml
+
+  vars:
+    - myfacts: "{{ ansible_facts.vgs }}"
+    - pkgs: "{{ packages }}"
+    - pkg: pkgs[0]
+    - pname: pkgs['name']
+
+  tasks:
+    # working bits
+    - name: "Show ansible_facts value"
+      debug:
+        var: ansible_facts
+    - name: "Show localized myfacts value"
+      debug:
+        var: myfacts
+    - name: "Show var/bash.yml packages value"
+      debug:
+        var: packages
+    - name: "Show localized pkgs var value"
+      debug:
+        var: pkgs
+    - name: "Show localized pkg var value"
+      debug:
+        var: pkg
+    - name: "Show localized pname var value"
+      debug:
+        var: pname
+
+    - name: "Show vars for further debugging"
+      debug:
+        var: vars
+      ignore_errors: yes

@@ -1,0 +1,39 @@
+#
+#     [Oct 04 2020, 15:15:02]
+#
+bosinst() 
+{
+FLAGS=
+INSTALLP_BUNDLE=
+while getopts r:p:l:m:b:i:x:s:F:v:Lcn:o:f:edj option
+do
+  case $option in
+    r) SOURCE=$OPTARG;;
+    p) SPOT=$OPTARG;;
+    l) LPP_SOURCE=$OPTARG;;
+    m) MKSYSB=$OPTARG;;
+    b) BOSINST_DATA=$OPTARG;;
+    i) IMAGE_DATA=$OPTARG;;
+    s) SCRIPT=$OPTARG;;
+    F) FB_SCRIPT=$OPTARG;;
+    v) RESOLV_CONF=$OPTARG;;
+    L) ACCEPT_LICENSES=yes;;
+    c) NO_NIM_CLIENT=yes;;
+    n) INSTALLP_BUNDLE=$INSTALLP_BUNDLE" -a installp_bundle=$OPTARG";;
+    o) FILESETS=$OPTARG;;
+    f) FLAGS=$FLAGS$OPTARG;;
+    e) NO_CLIENT_BOOT=yes;;
+    d) SET_BOOTLIST=yes;;
+    j) PRESERVE_RES=yes;;
+  esac
+done
+
+[[ -n ${FLAGS} ]] &&  FLAGS=a${FLAGS}
+
+if [[ -n $FILESETS ]]
+then
+  INSTALLP_BUNDLE=
+fi
+nimclient -o bos_inst -a source=${SOURCE}           -a spot=${SPOT} 		  ${LPP_SOURCE:+-a lpp_source=$LPP_SOURCE}           ${MKSYSB:+-a mksysb=$MKSYSB}           ${BOSINST_DATA:+-a bosinst_data=$BOSINST_DATA}           ${IMAGE_DATA:+-a image_data=$IMAGE_DATA}           ${SCRIPT:+-a script=$SCRIPT}           ${FB_SCRIPT:+-a fb_script=$FB_SCRIPT}           ${RESOLV_CONF:+-a resolv_conf=$RESOLV_CONF}           ${ACCEPT_LICENSES:+-a accept_licenses=$ACCEPT_LICENSES}           ${NO_NIM_CLIENT:+-a no_nim_client=$NO_NIM_CLIENT}           ${INSTALLP_BUNDLE:+$INSTALLP_BUNDLE}           ${FILESETS:+-a filesets="$FILESETS"}           ${FLAGS:+-a installp_flags=-$FLAGS}           ${NO_CLIENT_BOOT:+-a no_client_boot=$NO_CLIENT_BOOT}           ${SET_BOOTLIST:+-a set_bootlist=$SET_BOOTLIST}           ${PRESERVE_RES:+-a preserve_res=$PRESERVE_RES}
+}
+bosinst -r 'mksysb' -p '710404' -l '710404_lpp' -m '7104_04_gold' -b '720bid_ow' -v 'resolv_osu' -F 'fb_ojdk' '-L'  '-j' -n 'ojdk_bnd' -f 'c' -f 'N' -f 'g' -f 'X' -f '' -f '' -f '' -f 'Y'

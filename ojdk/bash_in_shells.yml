@@ -1,0 +1,34 @@
+# Playbook to test slurp module/builtin
+---
+- hosts: localhost
+  gather_facts: no
+
+  pre_tasks:
+    - name: Examine login.cfg
+      slurp:
+        src: ./login.cfg
+      register: logincfg
+    - name: extract shells setting
+      set_fact:
+        shells: "{{ logincfg['content'] | b64decode | regex_search('shells = (.*)') }}"
+    - name: extract bash in shells
+      set_fact:
+        bash_in_shells: "{{ shells.find('bash') }}"
+
+  tasks:
+    - name: "Update configuration files"
+      block:
+      - name: "Add bash to user shells in login.cfg"
+        replace:
+          path: ./login.cfg
+          regexp: '(shells = )'
+          replace: '\1/usr/bin/bash,/bin/bash,'
+        tags: login_shell
+      - name: "Add bash to /etc/shells"
+        blockinfile:
+          path: ./shells
+          block: |
+            /usr/bin/bash
+            /bin/bash
+        tags: login_shell
+      when: bash_in_shells == "-1"

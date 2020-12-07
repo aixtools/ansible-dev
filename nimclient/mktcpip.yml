@@ -1,0 +1,62 @@
+# Playbook to clear and renew ssh-keys in knownhosts locally
+# And then use the new/renewed keys to set an IP address on en1
+# Gather_facts is no: not relevant at this stage (of development)
+---
+# Remove ssh key related information - and renew - on localhost
+- hosts: localhost
+  gather_facts: no
+  
+  vars_files:
+    - "./vars/{{ osu_host }}.yml"
+
+  tasks:
+  - name: "Remove ssh identifiers for {{ osu_host}}"
+    command:
+       ssh-keygen -R "{{ item }}"
+    with_items: "{{ known_hosts }}"
+  - name: "Add ssh identifiers for {{ osu_host}}"
+    command:
+       ssh -o StrictHostKeyChecking=accept-new root@"{{ item }}" date
+    with_items: "{{ known_hosts }}"
+
+- hosts: "{{ osu_host }}"
+  gather_facts: yes
+  environment:
+    PATH: "/opt/bin:{{ ansible_env.PATH }}"
+
+  vars_files:
+    - "./vars/{{ osu_host }}.yml"
+
+  vars:
+    ansible_interpreter_python: /opt/bin/python3
+    ansible_ssh_user: root
+    ansible_ssh_private_key: ~/.ssh/id_ansible
+
+    netaddr: "{{ osu_netaddr }}"
+    netmask: 255.255.255.0
+    device: en1
+    hostname: "{{ osu_hostname }}"
+    rtype: net
+    rdest: default
+    rgateway: 140.211.9.1
+    route: "{{ rtype }},-hopcount,0,,,,,,,{{ rdest }},{{ rgateway }}"
+
+  tasks:
+  - name: "Configure IP, netmask and on device {{ device }}"
+    community.general.aix_devices:
+      device: "{{ device }}"
+      attributes:
+        netaddr: "{{ netaddr }}"
+        netmask: "{{ netmask }}"
+        state: up
+      state: available
+
+  - name: "Change hostname to {{ hostname }}"
+    command:
+      chdev -l inet0 -a hostname="{{ hostname }}"
+
+  - name: Add default route
+    command:
+      # AIX 7.1 and later has many more "," in the route attribute
+      # Using this on AIX 6.1 or AIX 5.3 will require a 'shorter' argument
+      chdev -l inet0 -a route="{{ route }}"

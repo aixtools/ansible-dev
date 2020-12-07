@@ -5,16 +5,15 @@
 - hosts: localhost
   gather_facts: no
 
+  vars_files:
+    - ./vars/knownhosts.yml
+
   tasks:
   - name: Remove ssh key for OSUtest
     command:
-       ssh-keygen -R "{{ item.label }}"
-    with_items:
-      - label: osutest
-      - label: osu-test.bak
+       ssh-keygen -R "{{ item }}"
+    with_items: "{{ known_hosts }}"
   - name: add new keys for OSUtest
     command:
-       ssh -o StrictHostKeyChecking=accept-new root@"{{ item.label }}" date
-    with_items:
-      - label: osutest
-      - label: osu-test.bak
+       ssh -o StrictHostKeyChecking=accept-new root@"{{ item }}" date
+    with_items: "{{ known_hosts }}"

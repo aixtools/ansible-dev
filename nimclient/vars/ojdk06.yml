@@ -1,0 +1,14 @@
+# provide the hostnames and/or IP addeesses that need to be removed
+# and updated in ${HOME/.ssh/known_hosts
+---
+known_hosts:
+  - ojdk06
+  - ojdk06.bak
+  - 10.1.0.5
+
+# These values for for the WAN setup - on en1 (en0 is set by nim)
+osu_netaddr:
+  140.211.9.100
+
+osu_hostname:
+  p9-aix1-ojdk06

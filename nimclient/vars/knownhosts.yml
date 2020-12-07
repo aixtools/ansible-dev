@@ -1,0 +1,7 @@
+# provide the hostnames and/or IP addeesses that need to be removed
+# and updated in ${HOME/.ssh/known_hosts
+---
+known_hosts:
+  - osutest
+  - osutest.bak
+  - 10.1.0.21

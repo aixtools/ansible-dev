@@ -1,0 +1,32 @@
+
+# Install expect plus prequisites
+---
+- hosts: wip
+  gather_facts: no
+
+  tasks:
+  - name: Showres example -- not really needed here!
+    command: >
+      nimclient -o showres
+        -a sm_inst_flags="installp_cmd -f expect.base,tcl.base,tk.base -L -l"
+        -a resource=710404_lpp
+    register: showres
+
+  # Maybe not the best way - yet. Looks clumsy
+  - name: Display results
+    debug:
+      msg: "{{ showres.stdout.split(\"\n\") }}"
+
+
+  # INST_LIST="-f${TMP_LIST}"
+  - name: Install the software.
+    command: >
+      /usr/sbin/nimclient -o cust -a lpp_source=710404_lpp
+            -a filesets="expect.base tcl.base tk.base"
+            -a installp_flags="-agXY"
+    register: cust
+
+  # Maybe not the best way - yet. Looks clumsy
+  - name: Display (preview) results
+    debug:
+      msg: "{{ cust.stdout.split(\"\n\") }}"

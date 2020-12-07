@@ -1,0 +1,43 @@
+# Install package when target test file does not exist
+- hosts: wip
+  gather_facts: no
+
+  vars:
+    tools:  "http://download.aixtools.net/tools/gnu/"
+    lpp:    "aixtools.gnu.make"
+    vrmf:   "4.3.0.0"
+    bashmd5: "md5:DF124057989542525B16F7237CF7BA61 "
+    pkg: "make"
+
+  tasks:
+    - name: Check for existing installation
+      command: "lslpp -L {{ lpp }}.\\*"
+      register: lslpp
+      ignore_errors: yes
+      debugger: never
+      changed_when: false
+    - command: "rpm -q {{ pkg }}"
+      debugger: never
+      register: rpm
+      ignore_errors: yes
+      changed_when: false
+    - debug:
+        msg: "Some version of I:{{ lpp }} or R:{{ pkg }} is already installed"
+      when: lslpp.rc == 0 or rpm.rc ==0
+
+    # Download and Install Software
+    - name: Download and Install Package
+      block:
+        - get_url:
+            url: "{{ tools }}{{ lpp }}.{{ vrmf }}.I"
+            dest: "/tmp"
+            checksum: "{{ bashmd5 }}"
+        - command: "/usr/sbin/installp -d /tmp/{{ lpp }}.{{ vrmf }}.I -aYX all"
+          register: installp
+        - file: "path=/tmp/{{ lpp }}.{{ vrmf }}.I state=absent"
+        - file: "path=/tmp/.toc state=absent"
+        - debug:
+            var: "{{ item }}.stdout_lines"
+          with_items:
+            - installp
+      when: lslpp.failed

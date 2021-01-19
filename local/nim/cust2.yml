@@ -19,12 +19,16 @@
 - hosts: wip
   gather_facts: no
 
+  vars:
+    filesets: aixtools.gnu.bash
+    lpp_source: aixtools
+    sm_showres: "installp_cmd -f {{ filesets }} -L -l"
   tasks:
   - name: Verify existence in repository
     command: >
       nimclient -o showres
-        -a sm_inst_flags="installp_cmd -f aixtools.gnu.bash -L -l"
-        -a resource=aixtools
+        -a "sm_inst_flags={{ sm_showres }}"
+        -a "resource={{ lpp_source }}"
     register: showres
     # This only checks the first line of output, that should be enough
     # to fail the play

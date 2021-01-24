@@ -6,6 +6,7 @@
 - hosts: localhost
   gather_facts: no
   
+# The host file contains the needed label definitions
   vars_files:
     - "./host_vars/{{ host }}.yml"
 
@@ -24,8 +25,8 @@
   environment:
     PATH: "/opt/bin:{{ ansible_env.PATH }}"
 
-  vars_files:
-    - "./host_vars/all.yml"
+#  vars_files:
+#    - "./group_vars/all.yml"
 #    - "./host_vars/{{ host }}.yml"
 
   vars:

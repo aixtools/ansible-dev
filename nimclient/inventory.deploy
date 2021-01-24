@@ -1,6 +1,12 @@
 [wip]
 osutest
 
+[nodejs]
+nodejs01
+nodejs02
+nodejs03
+nodejs04
+
 [deploy]
 ojdk06
 

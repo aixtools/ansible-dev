@@ -7,42 +7,45 @@
   gather_facts: no
   
   vars_files:
-    - "./vars/{{ osu_host }}.yml"
+    - "./host_vars/{{ host }}.yml"
 
   tasks:
-  - name: "Remove ssh identifiers for {{ osu_host}}"
+  - name: "Remove ssh identifiers for {{ host }}"
     command:
        ssh-keygen -R "{{ item }}"
-    with_items: "{{ known_hosts }}"
-  - name: "Add ssh identifiers for {{ osu_host}}"
+    with_items: "{{ labels }}"
+  - name: "Add ssh identifiers for {{ host }}"
     command:
        ssh -o StrictHostKeyChecking=accept-new root@"{{ item }}" date
-    with_items: "{{ known_hosts }}"
+    with_items: "{{ labels }}"
 
-- hosts: "{{ osu_host }}"
+- hosts: "{{ host }}"
   gather_facts: yes
   environment:
     PATH: "/opt/bin:{{ ansible_env.PATH }}"
 
   vars_files:
-    - "./vars/{{ osu_host }}.yml"
+    - "./host_vars/all.yml"
+#    - "./host_vars/{{ host }}.yml"
 
   vars:
-    ansible_interpreter_python: /opt/bin/python3
     ansible_ssh_user: root
     ansible_ssh_private_key: ~/.ssh/id_ansible
 
-    netaddr: "{{ osu_netaddr }}"
-    netmask: 255.255.255.0
-    device: en1
+# OSU values are set via host_vars/${host}.yml
     hostname: "{{ osu_hostname }}"
-    rtype: net
-    rdest: default
-    rgateway: 140.211.9.1
-    route: "{{ rtype }},-hopcount,0,,,,,,,{{ rdest }},{{ rgateway }}"
+    netaddr: "{{ osu_netaddr }}"
+
+# vars are set via host_vars/all.yml
+#    netmask: 255.255.255.0
+#    device: en1
+#    rtype: net
+#    rdest: default
+#    rgateway: 140.211.9.1
+#    route: "{{ rtype }},-hopcount,0,,,,,,,{{ rdest }},{{ rgateway }}"
 
   tasks:
-  - name: "Configure IP, netmask and on device {{ device }}"
+  - name: "Configure IP {{ netaddr}} with netmask {{ netmask }} on device {{ device }}"
     community.general.aix_devices:
       device: "{{ device }}"
       attributes:
@@ -55,7 +58,7 @@
     command:
       chdev -l inet0 -a hostname="{{ hostname }}"
 
-  - name: Add default route
+  - name: "Add default route to {{ rgateway }}"
     command:
       # AIX 7.1 and later has many more "," in the route attribute
       # Using this on AIX 6.1 or AIX 5.3 will require a 'shorter' argument

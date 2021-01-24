@@ -1,0 +1,15 @@
+# Default values for all hosts
+# variables that should be defined in the host specific file are commented 
+# netaddr: "{{ osu_netaddr }}"
+# netaddr6: "{{ osu_netaddr6 }}"
+netmask: 255.255.255.0
+device: en1
+# hostname: "{{ osu_hostname }}"
+rtype: net
+rdest: default
+rgateway: 140.211.9.1
+route: "{{ rtype }},-hopcount,0,,,,,,,{{ rdest }},{{ rgateway }}"
+# route6: # must lookup layout
+
+# Python is
+ansible_python_interpreter: /opt/bin/python3.6

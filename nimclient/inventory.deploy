@@ -1,14 +1,26 @@
 [wip]
 osutest
 
+[deploy]
+ojdk06
+
 [nodejs]
 nodejs01
 nodejs02
 nodejs03
 nodejs04
 
-[deploy]
+[ojdk]
+ojdk01
+ojdk02
+ojdk03
+ojdk04
+ojdk05
 ojdk06
+
+[osu:children]
+nodejs
+ojdk
 
 # Variables for all [OSU] hosts
 [all:vars]

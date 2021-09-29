@@ -1,5 +1,6 @@
 [wip]
 osutest
+cpython
 
 [deploy]
 ojdk06
@@ -13,7 +14,7 @@ nodejs04
 [ojdk]
 ojdk01
 ojdk02
-ojdk03
+ojdk03.bak
 ojdk04
 ojdk05
 ojdk06
@@ -21,8 +22,9 @@ ojdk06
 [osu:children]
 nodejs
 ojdk
+wip
 
 # Variables for all [OSU] hosts
 [all:vars]
 ansible_ssh_user=root
-ansible_ssh_private_key=~/.ssh/id_ansible
+ansible_ssh_private_key=~/.ssh
